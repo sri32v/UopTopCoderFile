@@ -8,9 +8,20 @@ const s3 = new AWS.S3();
 // const tableName = process.env.NOTES_TABLE;
 
 exports.handler = async (event) => {
+
+    console.log("Event:", event);
+    console.log("Event REcieved");
+
+    let fileContent = event.isBase64Encoded ? Buffer.from(event.body, 'base64') : event.body;
+    let fileName = `${Date.now()}.jpeg`;
+    //let contentType = event.headers['content-type'] || event.headers['Content-Type'];
   try {
-    console.log(event.params);
-    console.log(event.isBase64Encoded);
+    let data = await s3.putObject({
+        Bucket: process.env.fileUploadBucket,
+        Key: fileName,
+        Body: fileContent,
+        ACL:'public-read'
+        }).promise();
 
     return {
       statusCode: 200,
@@ -20,7 +31,6 @@ exports.handler = async (event) => {
         version: "v2Modified.0",
         timestamp: moment().unix(),
       }),
-      event:event
     };
   } catch (err) {
     console.log("Error", err);
