@@ -1,6 +1,6 @@
 service: uop-tc-fileapi
 custom:
-  fileUploadBucket: Uop-TC-FileStorage
+  fileUploadBucket: uop-tc-filestorage
   allowedHeaders: 
     - Accept
     - Content-Type
