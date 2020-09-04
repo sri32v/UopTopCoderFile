@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 AWS.config.update({region:'us-west-2'});
 const util =require('./util.js');
+const moment=require('moment');
 const s3 = new AWS.S3();
  
 // const dynamodb=new AWS.DynamoDB.DocumentClient();
