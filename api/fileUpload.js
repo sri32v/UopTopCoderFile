@@ -9,6 +9,9 @@ const s3 = new AWS.S3();
 
 exports.handler = async (event) => {
   try {
+    console.log(event.params);
+    console.log(event.isBase64Encoded);
+
     return {
       statusCode: 200,
       headers: util.getResponseHeaders(),
@@ -17,6 +20,7 @@ exports.handler = async (event) => {
         version: "v2Modified.0",
         timestamp: moment().unix(),
       }),
+      event:event
     };
   } catch (err) {
     console.log("Error", err);

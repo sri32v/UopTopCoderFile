@@ -42,6 +42,17 @@ functions:
           cors:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
+  fileUpload:
+    handler: api/fileUpload.handler
+    description: FileUploadApi
+    events: 
+      - http:
+          path: fileUpload
+          method: POST
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+
 resources:
   Resources:
     FileUploadBucket:
