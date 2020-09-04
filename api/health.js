@@ -11,7 +11,7 @@ exports.handler = async (event) =>{
             headers= util.getResponseHeaders(),
             body: JSON.stringify({
                 message: "Healthy CI/CD Demo",
-                version: "v1.0",
+                version: "v2.0",
                 timestamp: moment().unix()
             })
         }
