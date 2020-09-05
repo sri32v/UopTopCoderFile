@@ -9,20 +9,27 @@ const s3 = new AWS.S3();
 
 exports.handler = async (event) => {
 
-    console.log("Event:", event);
-    console.log("Event REcieved");
-
-    let fileContent = event.isBase64Encoded ? Buffer.from(event.body, 'base64') : event.body;
+  console.log(event.params.header);
+       
+  // console.log(JSON.stringify(event.params.header));
+  // console.log(event['body-json']);
+  let bodyBuffer = new Buffer.from(event['body-json'].toString(),'base64');
+  console.log(bodyBuffer); 
+   let boundary= multipart.getBoundary(event.params.header["Content-Type"]);
+   //console.log(boundary);
+   let parts =multipart.Parse(bodyBuffer,boundary);
+   console.log(parts[0].data);
     let fileName = `${Date.now()}.jpeg`;
     //let contentType = event.headers['content-type'] || event.headers['Content-Type'];
   try {
     let data = await s3.putObject({
         Bucket: process.env.fileUploadBucket,
         Key: fileName,
-        Body: fileContent,
+        Body: parts[0].data,
         ACL:'public-read'
         }).promise();
-
+const url =`https://${process.env.fileUploadBucket}.s3-us-west-2.amazonaws.com/${fileName}`
+console.log(url);
     return {
       statusCode: 200,
       headers: util.getResponseHeaders(),
@@ -30,7 +37,7 @@ exports.handler = async (event) => {
         message: "File Uploaded Successfully",
         version: "v2Modified.0",
         timestamp: moment().unix(),
-        Url:`https://${process.env.fileUploadBucket}.s3-us-west-2.amazonaws.com/${fileName}`
+        ImageURL: url
       }),
                                  };
   } catch (err) {
