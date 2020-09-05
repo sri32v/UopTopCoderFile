@@ -9,19 +9,20 @@ const s3 = new AWS.S3();
 // const tableName = process.env.NOTES_TABLE;
 
 exports.handler = async (event) => {
-  console.log(event);
-  console.log(event.params.header);
 
-  // console.log(JSON.stringify(event.params.header));
-  // console.log(event['body-json']);
   let bodyBuffer = new Buffer.from(event["body-json"].toString(), "base64");
-  console.log(bodyBuffer);
   let boundary = multipart.getBoundary(event.params.header["Content-Type"]);
-  //console.log(boundary);
   let parts = multipart.Parse(bodyBuffer, boundary);
-  //console.log(parts[0].data);
-  //console.log(parts);
-  let fileName = `${Date.now()}.pdf`;
+  //let fileName = `${Date.now()}.pdf`;
+  let fileType = parts[0].type;
+  console.log(fileType);
+  let extension  = fileType.substring(fileType.lastIndexOf('/')+1,fileType.length);
+  console.log(extension); 
+  let fileName=`${parts[0].filename}_${Date.now()}.${extension}`;
+let params = {
+  Bucket: process.env.fileUploadBucket,
+  key:fileName
+}
   //let contentType = event.headers['content-type'] || event.headers['Content-Type'];
   try {
     let data = await s3
