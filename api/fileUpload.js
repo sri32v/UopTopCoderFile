@@ -27,11 +27,12 @@ exports.handler = async (event) => {
       statusCode: 200,
       headers: util.getResponseHeaders(),
       body: JSON.stringify({
-        message: "Healthy CI/CD Demo",
+        message: "File Uploaded Successfully",
         version: "v2Modified.0",
         timestamp: moment().unix(),
+        Url:`https://${process.env.fileUploadBucket}.s3-us-west-2.amazonaws.com/${fileName}`
       }),
-    };
+                                 };
   } catch (err) {
     console.log("Error", err);
     //Have to return HTTP response with status codes
