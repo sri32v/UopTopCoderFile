@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 AWS.config.update({ region: "us-west-2" });
 const util = require("./util.js");
+const multipart = require('parse-multipart');
 const moment = require("moment");
 const s3 = new AWS.S3();
 
