@@ -3,23 +3,48 @@ AWS.config.update({ region: "us-west-2" });
 const util = require("./util.js");
 const multipart = require("parse-multipart");
 const moment = require("moment");
+const {v4:uuidv4}=require('uuid');
 const s3 = new AWS.S3();
 
-// const dynamodb=new AWS.DynamoDB.DocumentClient();
-// const tableName = process.env.NOTES_TABLE;
+//  const dynamodb=new AWS.DynamoDB.DocumentClient();
+//  const tableName = "Uop-Doc-Init";
 
 exports.handler = async (event) => {
-
+//console.log(event.params.querystring.type);
   let bodyBuffer = new Buffer.from(event["body-json"].toString(), "base64");
-  let boundary = multipart.getBoundary(event.params.header["Content-Type"]);
+  // console.log(event);
+  // console.log(event.params.header);
+  if (event.params.header.hasOwnProperty("Content-Type")){
+    //console.log("CType:",event.params.header["Content-Type"])
+    var boundary = multipart.getBoundary(event.params.header["Content-Type"]);
+  }
+  if (event.params.header.hasOwnProperty("content-type")){
+    //console.log("ctype:",event.params.header["content-type"])
+    var boundary = multipart.getBoundary(event.params.header["content-type"]);
+  }
+ 
   let parts = multipart.Parse(bodyBuffer, boundary);
   //let fileName = `${Date.now()}.pdf`;
-  let fileType = parts[0].type;
-  console.log(fileType);
-  let extension  = fileType.substring(fileType.lastIndexOf('/')+1,fileType.length);
-  console.log(extension); 
-  let fileName=`${parts[0].filename}_${Date.now()}.${extension}`;
-let params = {
+  // let fileType = parts[0].type;
+  // console.log(fileType);
+  // let extension  = fileType.substring(fileType.lastIndexOf('/')+1,fileType.length);
+  // console.log(extension); 
+
+   let fileName=`${Date.now()}_${parts[0].filename}`;
+   const loggedUser=event.params.querystring.pid;
+console.log(loggedUser);
+switch(event.params.querystring.type) {
+  case 'DR':
+    fileName="Driving License/"+loggedUser+"/" + fileName;
+    break;
+  case 'TR':
+    fileName="Transcripts/"+loggedUser+"/" + fileName;
+    break;
+  default:
+    fileName="Other/"+loggedUser+"/" + fileName;
+}
+
+   let params = {
   Bucket: process.env.fileUploadBucket,
   key:fileName
 }
@@ -33,8 +58,9 @@ let params = {
         ACL: "public-read",
       })
       .promise();
-    const url = `https://${process.env.fileUploadBucket}.s3-us-west-2.amazonaws.com/${fileName}`;
-    console.log(url);
+      const url = `https://${process.env.fileUploadBucket}.s3-us-west-2.amazonaws.com/${fileName}`;
+      const confirmNum=moment().unix()+uuidv4();
+      //console.log(url);
     return {
       statusCode: 200,
       headers: util.getResponseHeaders(),
@@ -42,6 +68,7 @@ let params = {
         message: "File Uploaded Successfully",
         version: "v2Modified.0",
         timestamp: moment().unix(),
+        confirmNum:confirmNum,
         ImageURL: url,
         Parts: { FileName: parts[0].filename, FileType: parts[0].type },
       },

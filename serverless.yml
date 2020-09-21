@@ -52,7 +52,26 @@ functions:
           cors:
             origin: '*'
             headers: ${self:custom.allowedHeaders}
-
+  addDb:
+    handler: api/addDb.handler
+    description: FileUploadApi
+    events: 
+      - http:
+          path: addDb
+          method: POST
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
+  getS3docs:
+    handler: api/getS3docs.handler
+    description: getS3docs
+    events: 
+      - http:
+          path: getS3docs
+          method: GET
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowedHeaders}
 resources:
   Resources:
     FileUploadBucket:

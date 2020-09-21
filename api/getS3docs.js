@@ -1,24 +1,20 @@
 const AWS = require("aws-sdk");
 AWS.config.update({ region: "us-west-2" });
 const util = require("./util.js");
-//const moment = require("moment");
 const s3 = new AWS.S3();
-
-//  const dynamodb=new AWS.DynamoDB.DocumentClient();
-//  const tableName = "Uop-Doc-Init";
- //console.log(tableName);
 
 exports.handler = async (event) => {
   try {
-    
+    let bucket =process.env.fileUploadBucket;
+    // Get file from S3
+    var params = {
+       Bucket: bucket,
+    };
+const response = await s3.listObjectsV2(params).promise();
     return {
       statusCode: 200,
       headers: util.getResponseHeaders(),
-      body: JSON.stringify({
-        message: "Healthy CI/CD Demo",
-        version: "v6shashiModified.0"
-        //timestamp: moment().unix(),
-      }),
+      body: JSON.stringify(response)
     };
   } catch (err) {
     console.log("Error", err);
